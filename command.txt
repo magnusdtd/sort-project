@@ -1,0 +1,83 @@
+Command 1:
+Prototype: [Execution file] -a [Algorithm] [Input file] [Output parameter(s)]
+                0           1       2           3               4             
+Example: .\main.exe -a selection-sort input.txt -both
+Output: 
+ALGORITHM MODE
+Algorithm: [Algorithm]
+Input file: [Input file]
+Input size: [Size of array in input file]
+--------------------------------
+Running time (if required):
+Comparisons (if required):
+
+
+Command 2:
+Prototype: [Execution file] -a [Algorithm] [Input size] [Input order] [Output parameter(s)]
+                0           1       2           3               4               5
+Example: .\main.exe -a selection-sort 5000 -rand -time
+Output: 
+ALGORITHM MODE
+Algorithm: [Algorithm]
+Input size: [Input size]
+Input order: [Input order] 
+--------------------------------
+Running time (if required):
+Comparisons (if required):
+
+Command 3:
+Prototype: [Execution file] -a [Algorithm] [Input size] [Output parameter(s)]
+                0           1       2           3               4            
+Example: .\main.exe -a insertion-sort 7000 -comp
+Output:
+ALGORITHM MODE
+Algorithm: [Algorithm]
+Input size: [Input size] 
+
+Input order: Randomize
+--------------------------------
+Running time (if required):
+Comparisons (if required):
+
+Input order: Nearly sorted
+--------------------------------
+Running time (if required):
+Comparisons (if required):
+
+Input order: Sorted
+--------------------------------
+Running time (if required):
+Comparisons (if required):
+
+Input order: Reversed
+--------------------------------
+Running time (if required):
+Comparisons (if required):
+
+
+Command 4:
+Prototype: [Execution file] -c [Algorithm 1] [Algorithm 2] [Input file]
+                0           1       2           3               4            
+Example: .\main.exe -c selection-sort insertion-sort input.txt
+Output:
+COMPARE MODE
+Algorithm: [Algorithm]
+Input file: [Input file]
+Input size: [Input size] 
+--------------------------------
+Running time: Sort Time 1 | Sort Time 2
+Comparisons: Sort Comp 1 | Sort Comp 2
+
+
+Command 5:
+Prototype: [Execution file] -c [Algorithm 1] [Algorithm 2] [Input size] [Input order]
+                0           1       2           3               4             5
+Example: .\main.exe -c selection-sort insertion-sort 1000 -nsorted
+Output:
+COMPARE MODE
+Algorithm: [Algorithm]
+Input size: [Input size]
+Input order: [Input order] 
+--------------------------------
+Running time: Sort Time 1 | Sort Time 2
+Comparisons: Sort Comp 1 | Sort Comp 2

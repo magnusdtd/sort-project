@@ -1,25 +1,25 @@
 Data Order,Data Size,Algorithm,Running Time (ms),Comparisons
-Randomize,10000,counting-sort,0.3095,59999
-Randomize,30000,counting-sort,0.909,180001
-Randomize,50000,counting-sort,2.022,299997
-Randomize,100000,counting-sort,3.7056,600001
-Randomize,300000,counting-sort,12.0667,1800001
-Randomize,500000,counting-sort,27.5289,3000001
-Nearly sorted,10000,counting-sort,0.2895,60001
-Nearly sorted,30000,counting-sort,0.5441,180001
-Nearly sorted,50000,counting-sort,1.4297,300001
-Nearly sorted,100000,counting-sort,1.7189,600001
-Nearly sorted,300000,counting-sort,7.3331,1800001
-Nearly sorted,500000,counting-sort,8.7383,3000001
-Sorted,10000,counting-sort,0.1992,60001
-Sorted,30000,counting-sort,0.9548,180001
-Sorted,50000,counting-sort,0.8961,300001
-Sorted,100000,counting-sort,2.242,600001
-Sorted,300000,counting-sort,6.4847,1800001
-Sorted,500000,counting-sort,11.0303,3000001
-Reversed,10000,counting-sort,0.2996,60001
-Reversed,30000,counting-sort,0.8087,180001
-Reversed,50000,counting-sort,0.9661,300001
-Reversed,100000,counting-sort,1.9445,600001
-Reversed,300000,counting-sort,7.6003,1800001
-Reversed,500000,counting-sort,11.5374,3000001
+Randomize,10000,counting-sort,0.4024,59999
+Randomize,30000,counting-sort,1.0872,179997
+Randomize,50000,counting-sort,1.4805,300001
+Randomize,100000,counting-sort,3.16,600001
+Randomize,300000,counting-sort,8.231,1800001
+Randomize,500000,counting-sort,19.3238,2999999
+Nearly sorted,10000,counting-sort,0.1879,60001
+Nearly sorted,30000,counting-sort,0.7731,180001
+Nearly sorted,50000,counting-sort,1.2673,300001
+Nearly sorted,100000,counting-sort,2.4535,600001
+Nearly sorted,300000,counting-sort,8.0095,1800001
+Nearly sorted,500000,counting-sort,10.1856,3000001
+Sorted,10000,counting-sort,0.2977,60001
+Sorted,30000,counting-sort,0.7987,180001
+Sorted,50000,counting-sort,1.1457,300001
+Sorted,100000,counting-sort,2.656,600001
+Sorted,300000,counting-sort,9.3923,1800001
+Sorted,500000,counting-sort,9.5932,3000001
+Reversed,10000,counting-sort,0.2417,60001
+Reversed,30000,counting-sort,0.6019,180001
+Reversed,50000,counting-sort,2.5868,300001
+Reversed,100000,counting-sort,2.4993,600001
+Reversed,300000,counting-sort,8.0105,1800001
+Reversed,500000,counting-sort,11.0982,3000001

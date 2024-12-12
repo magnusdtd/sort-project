@@ -38,15 +38,21 @@ void TestSortAlgorithm(void (*sortFunction)(int *&, const int &, unsigned long l
                        int *array,
                        const int &size,
                        unsigned long long &comparisons,
-                       double &time)
+                       double &time, 
+                       const bool &outputTime, 
+                       const bool &outputComparisons)
 {
-    comparisons = 0;
+    comparisons = 0, time = 0.f;
+    if (outputTime) {
+        auto start = std::chrono::high_resolution_clock::now();
+        sortFunction(array, size, comparisons);
+        auto end = std::chrono::high_resolution_clock::now();
 
-    auto start = std::chrono::high_resolution_clock::now();
-    sortFunction(array, size, comparisons);
-    auto end = std::chrono::high_resolution_clock::now();
+        time = std::chrono::duration<double, std::milli>(end - start).count();
+    } else if (!outputTime && outputComparisons) {
+        sortFunction(array, size, comparisons);
+    }
 
-    time = std::chrono::duration<double, std::milli>(end - start).count();
 }
 
 void LoadArrayFromFile(const std::string &filePath, int *&array, int &size)
@@ -84,8 +90,8 @@ void RunAndLog(void (*sortFunction)(int *&, const int &, unsigned long long &),
                int size,
                const std::string &orderName,
                void (*generateData)(int *, int),
-               bool outputTime,
-               bool outputComparisons,
+               const bool &outputTime,
+               const bool &outputComparisons,
                const std::string &outputFilePath)
 {
     unsigned long long comparisons = 0;
@@ -100,7 +106,7 @@ void RunAndLog(void (*sortFunction)(int *&, const int &, unsigned long long &),
 
     std::cout << "Input order: " << orderName << "\n";
     std::cout << "--------------------------------\n";
-    TestSortAlgorithm(sortFunction, array, size, comparisons, time);
+    TestSortAlgorithm(sortFunction, array, size, comparisons, time, outputTime, outputComparisons);
     if (outputTime)
         std::cout << "Running time: " << time << " milliseconds\n";
     if (outputComparisons)
@@ -111,8 +117,8 @@ void RunAndLog(void (*sortFunction)(int *&, const int &, unsigned long long &),
 void RunAlgorithmOnDifferentOrders(void (*sortFunction)(int *&, const int &, unsigned long long &), 
                                    const std::string &algorithmName, 
                                    int size, 
-                                   bool outputTime, 
-                                   bool outputComparisons)
+                                   const bool &outputTime, 
+                                   const bool &outputComparisons)
 {
     int *array = new int[size];
     if (!array) {
@@ -137,26 +143,27 @@ void CompareAlgorithms(void (*sortFunction1)(int *&, const int &, unsigned long 
                        const std::string &algorithm1, 
                        const std::string &algorithm2, 
                        int *array, 
-                       int size, 
-                       const std::string &inputOrder = "")
+                       int size,  
+                       const std::string &inputFilePath,
+                       const std::string &inputOrder)
 {
     unsigned long long comparisons1 = 0, comparisons2 = 0;
     double time1 = 0.0, time2 = 0.0;
 
     int *arrayCopy = new int[size];
     std::copy(array, array + size, arrayCopy);
-    TestSortAlgorithm(sortFunction1, arrayCopy, size, comparisons1, time1);
+    TestSortAlgorithm(sortFunction1, arrayCopy, size, comparisons1, time1, true, true);
 
     std::copy(array, array + size, arrayCopy);
-    TestSortAlgorithm(sortFunction2, arrayCopy, size, comparisons2, time2);
+    TestSortAlgorithm(sortFunction2, arrayCopy, size, comparisons2, time2, true, true);
 
     std::cout << "COMPARE MODE\n";
     std::cout << "Algorithm: " << algorithm1 << " | " << algorithm2 << "\n";
-    if (!inputOrder.empty())
-    {
-        std::cout << "Input order: " << inputOrderType[inputOrder] << "\n";
-    }
+    if (!inputFilePath.empty())
+        std::cout << "Input file: " << inputFilePath << "\n";
     std::cout << "Input size: " << size << "\n";
+    if (!inputOrder.empty())
+        std::cout << "Input order: " << inputOrderType[inputOrder] << "\n";
     std::cout << "--------------------------------\n";
     std::cout << "Running time: " << time1 << " | " << time2 << " milliseconds\n";
     std::cout << "Comparisons: " << comparisons1 << " | " << comparisons2 << "\n";
@@ -168,8 +175,8 @@ void CompareAlgorithms(void (*sortFunction1)(int *&, const int &, unsigned long 
 void ProcessAlgorithmMode(const std::string &algorithm, 
                           int size, 
                           const std::string &inputOrder, 
-                          bool outputTime, 
-                          bool outputComparisons)
+                          const bool &outputTime, 
+                          const bool &outputComparisons)
 {
     int dataType = 0;
     if (inputOrder == "-rand")
@@ -203,7 +210,7 @@ void ProcessAlgorithmMode(const std::string &algorithm,
 
     unsigned long long comparisons = 0;
     double time = 0.0;
-    TestSortAlgorithm(algorithms[algorithm], array, size, comparisons, time);
+    TestSortAlgorithm(algorithms[algorithm], array, size, comparisons, time, outputTime, outputComparisons);
     WriteArrayToFile(defaultOutputFilePath, array, size);
 
     if (outputTime)
@@ -216,12 +223,13 @@ void ProcessAlgorithmMode(const std::string &algorithm,
 
 int main(int argc, char *argv[])
 {
-    if (argc < 5 || argc > 7)
+    if (argc < 4 || argc > 7)
     {
         std::cerr << "Usage:\n";
         std::cerr << argv[0] << " -a [Algorithm] [Input file] [Output parameter(s)]\n";
         std::cerr << argv[0] << " -a [Algorithm] [Input size] [Input order] [Output parameter(s)]\n";
         std::cerr << argv[0] << " -a [Algorithm] [Input size] [Output parameter(s)]\n";
+        std::cerr << argv[0] << " -a [Algorithm] [Output parameter(s)]\n";
         std::cerr << argv[0] << " -c [Algorithm 1] [Algorithm 2] [Input file]\n";
         std::cerr << argv[0] << " -c [Algorithm 1] [Algorithm 2] [Input size] [Input order]\n";
         return 1;
@@ -229,7 +237,7 @@ int main(int argc, char *argv[])
 
     std::string mode = argv[1], algorithm1, algorithm2;
     bool outputTime = false, outputComparisons = false;
-    for (int i = 4; i < argc; ++i)
+    for (int i = 3; i < argc; ++i)
     {
         std::string param = argv[i];
         if (param == "-time")
@@ -249,6 +257,10 @@ int main(int argc, char *argv[])
     if (mode == "-a")
     {
         std::string algorithm = argv[2];
+        if (algorithms.find(algorithm) == algorithms.end()) {
+            std::cerr << "Error: Unknown algorithm " << algorithm << "\n";
+            return 2;
+        }
         if (argc == 6)
         { // Command 2
             std::string inputOrder = argv[4];
@@ -266,7 +278,7 @@ int main(int argc, char *argv[])
             ProcessAlgorithmMode(algorithm, size, inputOrder, outputTime, outputComparisons);
         }
         else if (argc == 5 && std::isdigit(argv[3][0]))
-        { // Command 3
+        { // Command 3: Run algorithm on different orders
             try
             {
                 size = std::atoi(argv[3]);
@@ -286,6 +298,12 @@ int main(int argc, char *argv[])
                 return 2;
             }
         }
+        else if (argc == 4)
+        { // Command 3: Run algorithm on different sizes and orders
+            std::vector<int> sizes = {10000, 30000, 50000, 100000, 300000, 500000};
+            for (const int &size : sizes)
+                RunAlgorithmOnDifferentOrders(algorithms[algorithm], algorithm, size, outputTime, outputComparisons);
+        }
         else
         { // Command 1
             LoadArrayFromFile(argv[3], array, size);
@@ -296,7 +314,7 @@ int main(int argc, char *argv[])
             std::cout << "--------------------------------\n";
             unsigned long long comparisons = 0;
             double time = 0;
-            TestSortAlgorithm(algorithms[algorithm], array, size, comparisons, time);
+            TestSortAlgorithm(algorithms[algorithm], array, size, comparisons, time, outputTime, outputComparisons);
             WriteArrayToFile("./output.txt", array, size);
             if (outputTime)
                 std::cout << "Running time: " << time << " milliseconds\n";
@@ -308,10 +326,24 @@ int main(int argc, char *argv[])
     else if (mode == "-c")
     {
         algorithm1 = argv[2], algorithm2 = argv[3];
+        if (algorithms.find(algorithm1) == algorithms.end()) {
+            std::cerr << "Error: Unknown algorithm " << algorithm1 << "\n";
+            return 2;
+        } else if (algorithms.find(algorithm2) == algorithms.end()) {
+            std::cerr << "Error: Unknown algorithm " << algorithm2 << "\n";
+            return 2;            
+        }
         if (argc == 5)
         { // Command 4
+            // Validate the input path
+            std::ifstream file(argv[4]);
+            if (!file) {
+                std::cerr << "Error: Invalid file path " << argv[4] << "\n";
+                return 5;
+            }
+            file.close();
             LoadArrayFromFile(argv[4], array, size);
-            CompareAlgorithms(algorithms[algorithm1], algorithms[algorithm2], algorithm1, algorithm2, array, size);
+            CompareAlgorithms(algorithms[algorithm1], algorithms[algorithm2], algorithm1, algorithm2, array, size, argv[4], "");
             delete[] array;
         }
         else if (argc == 6)
@@ -349,7 +381,7 @@ int main(int argc, char *argv[])
             }
             GenerateData(array, size, dataType);
 
-            CompareAlgorithms(algorithms[algorithm1], algorithms[algorithm2], algorithm1, algorithm2, array, size, inputOrder);
+            CompareAlgorithms(algorithms[algorithm1], algorithms[algorithm2], algorithm1, algorithm2, array, size, "", inputOrder);
             delete[] array;
         }
         else
@@ -366,3 +398,4 @@ int main(int argc, char *argv[])
 
     return 0;
 }
+
