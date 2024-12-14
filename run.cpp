@@ -50,7 +50,7 @@ int main() {
         // "selection-sort", "insertion-sort", "bubble-sort", "shaker-sort", 
         // "shell-sort", "heap-sort", "merge-sort", "quick-sort", 
         // "counting-sort", "radix-sort", 
-        "counting-sort"
+        "flash-sort"
     };
 
     std::ofstream outFile("results.csv");
