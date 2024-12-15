@@ -1,225 +1,43 @@
-#include "./include/sort.hpp"
-#include "./include/DataGenerator.hpp"
-#include <chrono>
-#include <iostream>
-#include <fstream>
-#include <string>
-#include <unordered_map>
-#include <functional>
-#include <chrono>
+#include "./helper/test-function.hpp"
 
-const std::string defaultInputFilePath = "./input.txt";
-const std::string defaultInputFilePath_1 = "./input_1.txt";
-const std::string defaultInputFilePath_2 = "./input_2.txt";
-const std::string defaultInputFilePath_3 = "./input_3.txt";
-const std::string defaultInputFilePath_4 = "./input_4.txt";
-const std::string defaultOutputFilePath = "./output.txt";
+#include "./sorting-algorithm/selection-sort.hpp"
+#include "./sorting-algorithm/insertion-sort.hpp"
+#include "./sorting-algorithm/bubble-sort.hpp"
+#include "./sorting-algorithm/shaker-sort.hpp"
+#include "./sorting-algorithm/shell-sort.hpp"
+#include "./sorting-algorithm/heap-sort.hpp"
+#include "./sorting-algorithm/merge-sort.hpp"
+#include "./sorting-algorithm/quick-sort.hpp"
+#include "./sorting-algorithm/counting-sort.hpp"
+#include "./sorting-algorithm/radix-sort.hpp"
+#include "./sorting-algorithm/flash-sort.hpp"
 
 std::unordered_map<std::string, void (*)(int *&, const int &, unsigned long long &)> algorithms = {
-    {"selection-sort", Sort::SelectionSort},
-    {"insertion-sort", Sort::InsertionSort},
-    {"bubble-sort", Sort::BubbleSort},
-    {"shaker-sort", Sort::ShakerSort},
-    {"shell-sort", Sort::ShellSort},
-    {"heap-sort", Sort::HeapSort},
-    {"merge-sort", Sort::MergeSort},
-    {"quick-sort", Sort::QuickSort},
-    {"counting-sort", Sort::CountingSort},
-    {"radix-sort", Sort::RadixSort},
-    {"flash-sort", Sort::FlashSort}};
+    {"selection-sort", SelectionSort},
+    {"insertion-sort", InsertionSort},
+    {"bubble-sort", BubbleSort},
+    {"shaker-sort", ShakerSort},
+    {"shell-sort", ShellSort},
+    {"heap-sort", HeapSort},
+    {"merge-sort", MergeSort},
+    {"quick-sort", QuickSort},
+    {"counting-sort", CountingSort},
+    {"radix-sort", RadixSort},
+    {"flash-sort", FlashSort}};
 
-std::unordered_map<std::string, std::string> inputOrderType = {
+std::unordered_map<std::string, std::string> inputOrderName = {
     {"-rand", "Randomize"},
     {"-nsorted", "Nearly sorted"},
     {"-sorted", "Sorted"},
-    {"-rev", "Reversed"}};
+    {"-rev", "Reversed"}
+};
 
-void TestSortAlgorithm(void (*sortFunction)(int *&, const int &, unsigned long long &),
-                       int *array,
-                       const int &size,
-                       unsigned long long &comparisons,
-                       double &time, 
-                       const bool &outputTime, 
-                       const bool &outputComparisons)
-{
-    comparisons = 0, time = 0.f;
-    if (outputTime) {
-        auto start = std::chrono::high_resolution_clock::now();
-        sortFunction(array, size, comparisons);
-        auto end = std::chrono::high_resolution_clock::now();
-
-        time = std::chrono::duration<double, std::milli>(end - start).count();
-    } else if (!outputTime && outputComparisons) {
-        sortFunction(array, size, comparisons);
-    }
-
-}
-
-void LoadArrayFromFile(const std::string &filePath, int *&array, int &size)
-{
-    std::ifstream inputBuffer(filePath);
-    if (!inputBuffer)
-    {
-        std::cerr << "Error: Can't' open file " << filePath << "\n";
-        exit(1);
-    }
-    inputBuffer >> size;
-    array = new int[size];
-    for (int i = 0; i < size; ++i)
-        inputBuffer >> array[i];
-    inputBuffer.close();
-}
-
-void WriteArrayToFile(const std::string &filePath, int *&array, const int &size)
-{
-    std::ofstream outputBuffer(filePath);
-    if (!outputBuffer)
-    {
-        std::cerr << "Error: Can't open file" << filePath << "\n";
-        exit(1);
-    }
-    outputBuffer << size << "\n";
-    for (int i = 0; i < size; ++i)
-        outputBuffer << array[i] << " ";
-    outputBuffer << "\n";
-    outputBuffer.close();
-}
-
-void RunAndLog(void (*sortFunction)(int *&, const int &, unsigned long long &),
-               int *array,
-               int size,
-               const std::string &orderName,
-               void (*generateData)(int *, int),
-               const bool &outputTime,
-               const bool &outputComparisons,
-               const std::string &outputFilePath)
-{
-    unsigned long long comparisons = 0;
-    double time = 0.0;
-
-    generateData(array, size);
-    if (!array) {
-        std::cerr << "Array is null\n";
-        exit(1);
-    }
-    WriteArrayToFile(outputFilePath, array, size);
-
-    std::cout << "Input order: " << orderName << "\n";
-    std::cout << "--------------------------------\n";
-    TestSortAlgorithm(sortFunction, array, size, comparisons, time, outputTime, outputComparisons);
-    if (outputTime)
-        std::cout << "Running time: " << time << " milliseconds\n";
-    if (outputComparisons)
-        std::cout << "Comparisons: " << comparisons << "\n";
-    std::cout << "\n";
-}
-
-void RunAlgorithmOnDifferentOrders(void (*sortFunction)(int *&, const int &, unsigned long long &), 
-                                   const std::string &algorithmName, 
-                                   int size, 
-                                   const bool &outputTime, 
-                                   const bool &outputComparisons)
-{
-    int *array = new int[size];
-    if (!array) {
-        std::cerr << "Array is null\n";
-        exit(1);
-    }
-
-    std::cout << "ALGORITHM MODE\n";
-    std::cout << "Algorithm: " << algorithmName << "\n";
-    std::cout << "Input size: " << size << "\n\n";
-
-    RunAndLog(sortFunction, array, size, "Randomize", GenerateRandomData, outputTime, outputComparisons, defaultInputFilePath_1);
-    RunAndLog(sortFunction, array, size, "Nearly sorted", GenerateNearlySortedData, outputTime, outputComparisons, defaultInputFilePath_2);
-    RunAndLog(sortFunction, array, size, "Sorted", GenerateSortedData, outputTime, outputComparisons, defaultInputFilePath_3);
-    RunAndLog(sortFunction, array, size, "Reversed", GenerateReverseData, outputTime, outputComparisons, defaultInputFilePath_4);
-
-    delete[] array;
-}
-
-void CompareAlgorithms(void (*sortFunction1)(int *&, const int &, unsigned long long &), 
-                       void (*sortFunction2)(int *&, const int &, unsigned long long &), 
-                       const std::string &algorithm1, 
-                       const std::string &algorithm2, 
-                       int *array, 
-                       int size,  
-                       const std::string &inputFilePath,
-                       const std::string &inputOrder)
-{
-    unsigned long long comparisons1 = 0, comparisons2 = 0;
-    double time1 = 0.0, time2 = 0.0;
-
-    int *arrayCopy = new int[size];
-    std::copy(array, array + size, arrayCopy);
-    TestSortAlgorithm(sortFunction1, arrayCopy, size, comparisons1, time1, true, true);
-
-    std::copy(array, array + size, arrayCopy);
-    TestSortAlgorithm(sortFunction2, arrayCopy, size, comparisons2, time2, true, true);
-
-    std::cout << "COMPARE MODE\n";
-    std::cout << "Algorithm: " << algorithm1 << " | " << algorithm2 << "\n";
-    if (!inputFilePath.empty())
-        std::cout << "Input file: " << inputFilePath << "\n";
-    std::cout << "Input size: " << size << "\n";
-    if (!inputOrder.empty())
-        std::cout << "Input order: " << inputOrderType[inputOrder] << "\n";
-    std::cout << "--------------------------------\n";
-    std::cout << "Running time: " << time1 << " | " << time2 << " milliseconds\n";
-    std::cout << "Comparisons: " << comparisons1 << " | " << comparisons2 << "\n";
-    std::cout << "\n";
-
-    delete[] arrayCopy;
-}
-
-void ProcessAlgorithmMode(const std::string &algorithm, 
-                          int size, 
-                          const std::string &inputOrder, 
-                          const bool &outputTime, 
-                          const bool &outputComparisons)
-{
-    int dataType = 0;
-    if (inputOrder == "-rand")
-        dataType = 0;
-    else if (inputOrder == "-sorted")
-        dataType = 1;
-    else if (inputOrder == "-rev")
-        dataType = 2;
-    else if (inputOrder == "-nsorted")
-        dataType = 3;
-    else
-    {
-        std::cerr << "Error: Unknown input order " << inputOrder << "\n";
-        exit(4);
-    }
-
-    int *array = new int[size];
-    if (!array) {
-        std::cerr << "Array is null\n";
-        exit(1);
-    }
-    GenerateData(array, size, dataType);
-
-    WriteArrayToFile(defaultInputFilePath, array, size);
-
-    std::cout << "ALGORITHM MODE\n";
-    std::cout << "Algorithm: " << algorithm << "\n";
-    std::cout << "Input size: " << size << "\n";
-    std::cout << "Input order: " << inputOrderType[inputOrder] << "\n";
-    std::cout << "--------------------------------\n";
-
-    unsigned long long comparisons = 0;
-    double time = 0.0;
-    TestSortAlgorithm(algorithms[algorithm], array, size, comparisons, time, outputTime, outputComparisons);
-    WriteArrayToFile(defaultOutputFilePath, array, size);
-
-    if (outputTime)
-        std::cout << "Running time: " << time << " milliseconds\n";
-    if (outputComparisons)
-        std::cout << "Comparisons: " << comparisons << "\n";
-
-    delete[] array;
-}
+std::unordered_map<std::string, int> inputOrderType = {
+    {"-rand", RANDOM_DATA},
+    {"-nsorted", NEARLY_SORTED_DATA},
+    {"-sorted", SORTED_DATA},
+    {"-rev", REVERSE_DATA}
+};
 
 int main(int argc, char *argv[])
 {
@@ -275,7 +93,14 @@ int main(int argc, char *argv[])
             }
             if (size == 0)
                 std::cerr << "Error: argv[3] is 0\n";
-            ProcessAlgorithmMode(algorithm, size, inputOrder, outputTime, outputComparisons);
+            int dataType = 0;
+            if (inputOrderType.find(inputOrder) == inputOrderType.end()) {
+                std::cerr << "Error: Invalid input order\n";
+                exit(4);
+            } else {
+                dataType = inputOrderType[inputOrder];
+            }
+            ProcessAlgorithmMode(algorithms[algorithm], algorithm, size, dataType, inputOrderName[inputOrder], outputTime, outputComparisons);
         }
         else if (argc == 5 && std::isdigit(argv[3][0]))
         { // Command 3: Run algorithm on different orders
@@ -306,7 +131,7 @@ int main(int argc, char *argv[])
         }
         else
         { // Command 1
-            LoadArrayFromFile(argv[3], array, size);
+            readArrayFromFile(argv[3], array, size);
             std::cout << "ALGORITHM MODE\n";
             std::cout << "Algorithm: " << algorithm << "\n";
             std::cout << "Input file: " << argv[3] << "\n";
@@ -315,7 +140,7 @@ int main(int argc, char *argv[])
             unsigned long long comparisons = 0;
             double time = 0;
             TestSortAlgorithm(algorithms[algorithm], array, size, comparisons, time, outputTime, outputComparisons);
-            WriteArrayToFile("./output.txt", array, size);
+            writeArrayToFile("./output.txt", array, size);
             if (outputTime)
                 std::cout << "Running time: " << time << " milliseconds\n";
             if (outputComparisons)
@@ -342,7 +167,7 @@ int main(int argc, char *argv[])
                 return 5;
             }
             file.close();
-            LoadArrayFromFile(argv[4], array, size);
+            readArrayFromFile(argv[4], array, size);
             CompareAlgorithms(algorithms[algorithm1], algorithms[algorithm2], algorithm1, algorithm2, array, size, argv[4], "");
             delete[] array;
         }
@@ -361,27 +186,20 @@ int main(int argc, char *argv[])
                 std::cerr << "Error: argv[3] is 0\n";
             std::string inputOrder = argv[5];
             int dataType = 0;
-            if (inputOrder == "-rand")
-                dataType = 0;
-            else if (inputOrder == "-sorted")
-                dataType = 1;
-            else if (inputOrder == "-rev")
-                dataType = 2;
-            else if (inputOrder == "-nsorted")
-                dataType = 3;
-            else
-            {
-                std::cerr << "Error: Unknown input order " << inputOrder << "\n";
-                return 4;
+            if (inputOrderType.find(inputOrder) == inputOrderType.end()) {
+                std::cerr << "Error: Invalid input order\n";
+                exit(4);
+            } else {
+                dataType = inputOrderType[inputOrder];
             }
             array = new int[size];
             if (!array) {
-                std::cerr << "Array is null\n";
+                std::cerr << "Error: Can not allocate new memory\n";
                 exit(1);
             }
             GenerateData(array, size, dataType);
 
-            CompareAlgorithms(algorithms[algorithm1], algorithms[algorithm2], algorithm1, algorithm2, array, size, "", inputOrder);
+            CompareAlgorithms(algorithms[algorithm1], algorithms[algorithm2], algorithm1, algorithm2, array, size, "", inputOrderName[inputOrder]);
             delete[] array;
         }
         else

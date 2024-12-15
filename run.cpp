@@ -36,7 +36,7 @@ std::string runCommand(const std::string &command) {
 }
 
 int main() {
-    int buildCommand = system("g++ main.cpp ./include/DataGenerator.hpp ./include/sort.hpp ./include/sort.cpp -std=c++17 -o main");
+    int buildCommand = system("g++ main.cpp ./helper/DataGenerator.hpp ./helper/ReadWriteData.hpp ./helper/test-function.hpp ./sorting-algorithm/selection-sort.hpp ./sorting-algorithm/insertion-sort.hpp ./sorting-algorithm/bubble-sort.hpp ./sorting-algorithm/shaker-sort.hpp ./sorting-algorithm/shell-sort.hpp ./sorting-algorithm/heap-sort.hpp ./sorting-algorithm/merge-sort.hpp ./sorting-algorithm/quick-sort.hpp ./sorting-algorithm/counting-sort.hpp ./sorting-algorithm/radix-sort.hpp ./sorting-algorithm/flash-sort.hpp -std=c++17 -o main");
     if (buildCommand) {
         std::cerr << "Building file failed\n";
         exit(1);
@@ -47,15 +47,15 @@ int main() {
     std::vector<std::string> dataOrders = {"-rand", "-nsorted", "-sorted", "-rev"};
     std::vector<int> dataSizes = {10000, 30000, 50000, 100000, 300000, 500000};
     std::vector<std::string> sortingAlgorithms = {
-        // "selection-sort", "insertion-sort", "bubble-sort", "shaker-sort", 
-        // "shell-sort", "heap-sort", "merge-sort", "quick-sort", 
-        // "counting-sort", "radix-sort", 
+        "selection-sort", "insertion-sort", "bubble-sort", "shaker-sort", 
+        "shell-sort", "heap-sort", "merge-sort", "quick-sort", 
+        "counting-sort", "radix-sort", 
         "flash-sort"
     };
 
-    std::ofstream outFile("results.csv");
+    std::ofstream outFile("result.csv");
     if (!outFile) {
-        std::cerr << "Failed to open results.csv for writing\n";
+        std::cerr << "Failed to open result.csv for writing\n";
         return 1;
     }
 
@@ -98,6 +98,6 @@ int main() {
     }
 
     outFile.close();
-    std::cout << "Results written to results.csv\n";
+    std::cout << "Results written to result.csv\n";
     return 0;
 }
