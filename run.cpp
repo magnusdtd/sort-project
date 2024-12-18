@@ -36,7 +36,7 @@ std::string runCommand(const std::string &command) {
 }
 
 int main() {
-    int buildCommand = system("g++ main.cpp ./helper/DataGenerator.hpp ./helper/ReadWriteData.hpp ./helper/test-function.hpp ./sorting-algorithm/selection-sort.hpp ./sorting-algorithm/insertion-sort.hpp ./sorting-algorithm/bubble-sort.hpp ./sorting-algorithm/shaker-sort.hpp ./sorting-algorithm/shell-sort.hpp ./sorting-algorithm/heap-sort.hpp ./sorting-algorithm/merge-sort.hpp ./sorting-algorithm/quick-sort.hpp ./sorting-algorithm/counting-sort.hpp ./sorting-algorithm/radix-sort.hpp ./sorting-algorithm/flash-sort.hpp -std=c++17 -o main");
+    int buildCommand = system("g++ -std=c++17 -Xlinker --stack -Xlinker 16777216 -o main.exe main.cpp ./helper/DataGenerator.hpp ./helper/ReadWriteData.hpp ./helper/testFunction.hpp ./sorting-algorithm/selection-sort.hpp ./sorting-algorithm/insertion-sort.hpp ./sorting-algorithm/bubble-sort.hpp ./sorting-algorithm/shaker-sort.hpp ./sorting-algorithm/shell-sort.hpp ./sorting-algorithm/heap-sort.hpp ./sorting-algorithm/merge-sort.hpp ./sorting-algorithm/quick-sort.hpp ./sorting-algorithm/counting-sort.hpp ./sorting-algorithm/radix-sort.hpp ./sorting-algorithm/flash-sort.hpp");
     if (buildCommand) {
         std::cerr << "Building file failed\n";
         exit(1);
@@ -47,9 +47,16 @@ int main() {
     std::vector<std::string> dataOrders = {"-rand", "-nsorted", "-sorted", "-rev"};
     std::vector<int> dataSizes = {10000, 30000, 50000, 100000, 300000, 500000};
     std::vector<std::string> sortingAlgorithms = {
-        "selection-sort", "insertion-sort", "bubble-sort", "shaker-sort", 
-        "shell-sort", "heap-sort", "merge-sort", "quick-sort", 
-        "counting-sort", "radix-sort", 
+        "selection-sort", 
+        "insertion-sort", 
+        "bubble-sort", 
+        "shaker-sort", 
+        "shell-sort", 
+        "heap-sort", 
+        "merge-sort", 
+        "quick-sort", 
+        "counting-sort", 
+        "radix-sort", 
         "flash-sort"
     };
 

@@ -15,7 +15,8 @@
 #define defaultInputFilePath_4 "./input_4.txt"
 #define defaultOutputFilePath "./output.txt"
 
-void TestSortAlgorithm( void (*sortFunction)(int *&, const int &, unsigned long long &), 
+void TestSortAlgorithm( void (*elapsedTimeSortFunction)(int *&, const int &),
+                        void (*countComparisonSortFunction)(int *&, const int &, unsigned long long &),
                         int *array, 
                         const int &size, 
                         unsigned long long &comparisons, 
@@ -24,19 +25,28 @@ void TestSortAlgorithm( void (*sortFunction)(int *&, const int &, unsigned long 
                         const bool &outputComparisons)
 {
     comparisons = 0, time = 0.f;
-    if (outputTime) {
-        auto start = std::chrono::high_resolution_clock::now();
-        sortFunction(array, size, comparisons);
-        auto end = std::chrono::high_resolution_clock::now();
+    if (outputTime && outputComparisons) {
 
+        auto start = std::chrono::high_resolution_clock::now();
+        elapsedTimeSortFunction(array, size);
+        auto end = std::chrono::high_resolution_clock::now();
         time = std::chrono::duration<double, std::milli>(end - start).count();
+
+        countComparisonSortFunction(array, size, comparisons);
+
     } else if (!outputTime && outputComparisons) {
-        sortFunction(array, size, comparisons);
+        countComparisonSortFunction(array, size, comparisons);
+    } else if (outputTime && !outputComparisons) {
+        auto start = std::chrono::high_resolution_clock::now();
+        elapsedTimeSortFunction(array, size);
+        auto end = std::chrono::high_resolution_clock::now();
+        time = std::chrono::duration<double, std::milli>(end - start).count();
     }
 
 }
 
-void RunAndLog( void (*sortFunction)(int *&, const int &, unsigned long long &), 
+void RunAndLog( void (*elapsedTimeSortFunction)(int *&, const int &),
+                void (*countComparisonSortFunction)(int *&, const int &, unsigned long long &), 
                 int *array, 
                 const int &size, 
                 const std::string &dataOrderName, 
@@ -57,7 +67,7 @@ void RunAndLog( void (*sortFunction)(int *&, const int &, unsigned long long &),
 
     std::cout << "Input order: " << dataOrderName << "\n";
     std::cout << "--------------------------------\n";
-    TestSortAlgorithm(sortFunction, array, size, comparisons, time, outputTime, outputComparisons);
+    TestSortAlgorithm(elapsedTimeSortFunction, countComparisonSortFunction, array, size, comparisons, time, outputTime, outputComparisons);
     if (outputTime)
         std::cout << "Running time: " << time << " milliseconds\n";
     if (outputComparisons)
@@ -65,11 +75,12 @@ void RunAndLog( void (*sortFunction)(int *&, const int &, unsigned long long &),
     std::cout << "\n";
 }
 
-void RunAlgorithmOnDifferentOrders(   void (*sortFunction)(int *&, const int &, unsigned long long &), 
-                                            const std::string &algorithmName, 
-                                            int size, 
-                                            const bool &outputTime, 
-                                            const bool &outputComparisons)
+void RunAlgorithmOnDifferentOrders( void (*elapsedTimeSortFunction)(int *&, const int &),
+                                    void (*countComparisonSortFunction)(int *&, const int &, unsigned long long &), 
+                                    const std::string &algorithmName, 
+                                    int size, 
+                                    const bool &outputTime, 
+                                    const bool &outputComparisons)
 {
     int *array = new int[size];
     if (!array) {
@@ -81,16 +92,18 @@ void RunAlgorithmOnDifferentOrders(   void (*sortFunction)(int *&, const int &, 
     std::cout << "Algorithm: " << algorithmName << "\n";
     std::cout << "Input size: " << size << "\n\n";
 
-    RunAndLog(sortFunction, array, size, "Randomize", RANDOM_DATA, outputTime, outputComparisons, defaultInputFilePath_1);
-    RunAndLog(sortFunction, array, size, "Nearly sorted", NEARLY_SORTED_DATA, outputTime, outputComparisons, defaultInputFilePath_2);
-    RunAndLog(sortFunction, array, size, "Sorted", SORTED_DATA, outputTime, outputComparisons, defaultInputFilePath_3);
-    RunAndLog(sortFunction, array, size, "Reversed", REVERSE_DATA, outputTime, outputComparisons, defaultInputFilePath_4);
+    RunAndLog(elapsedTimeSortFunction, countComparisonSortFunction, array, size, "Randomize", RANDOM_DATA, outputTime, outputComparisons, defaultInputFilePath_1);
+    RunAndLog(elapsedTimeSortFunction, countComparisonSortFunction, array, size, "Nearly sorted", NEARLY_SORTED_DATA, outputTime, outputComparisons, defaultInputFilePath_2);
+    RunAndLog(elapsedTimeSortFunction, countComparisonSortFunction, array, size, "Sorted", SORTED_DATA, outputTime, outputComparisons, defaultInputFilePath_3);
+    RunAndLog(elapsedTimeSortFunction, countComparisonSortFunction, array, size, "Reversed", REVERSE_DATA, outputTime, outputComparisons, defaultInputFilePath_4);
 
     delete[] array;
 }
 
-void CompareAlgorithms( void (*sortFunction1)(int *&, const int &, unsigned long long &), 
-                        void (*sortFunction2)(int *&, const int &, unsigned long long &), 
+void CompareAlgorithms( void (*elapsedTimeSortFunction1)(int *&, const int &),
+                        void (*countComparisonSortFunction1)(int *&, const int &, unsigned long long &), 
+                        void (*elapsedTimeSortFunction2)(int *&, const int &),
+                        void (*countComparisonSortFunction2)(int *&, const int &, unsigned long long &),  
                         const std::string &algorithm1Name, 
                         const std::string &algorithm2Name, 
                         int *array, 
@@ -103,10 +116,26 @@ void CompareAlgorithms( void (*sortFunction1)(int *&, const int &, unsigned long
 
     int *arrayCopy = new int[size];
     std::copy(array, array + size, arrayCopy);
-    TestSortAlgorithm(sortFunction1, arrayCopy, size, comparisons1, time1, true, true);
+    TestSortAlgorithm(  elapsedTimeSortFunction1, 
+                        countComparisonSortFunction1, 
+                        arrayCopy, 
+                        size, 
+                        comparisons1, 
+                        time1, 
+                        true, 
+                        true
+    );
 
     std::copy(array, array + size, arrayCopy);
-    TestSortAlgorithm(sortFunction2, arrayCopy, size, comparisons2, time2, true, true);
+    TestSortAlgorithm(  elapsedTimeSortFunction2, 
+                        countComparisonSortFunction2, 
+                        arrayCopy, 
+                        size, 
+                        comparisons2, 
+                        time2, 
+                        true, 
+                        true
+    );
 
     std::cout << "COMPARE MODE\n";
     std::cout << "Algorithm: " << algorithm1Name << " | " << algorithm2Name << "\n";
@@ -123,7 +152,8 @@ void CompareAlgorithms( void (*sortFunction1)(int *&, const int &, unsigned long
     delete[] arrayCopy;
 }
 
-void ProcessAlgorithmMode(  void (*sortFunction)(int *&, const int &, unsigned long long &), 
+void ProcessAlgorithmMode(  void (*elapsedTimeSortFunction)(int *&, const int &),
+                            void (*countComparisonSortFunction)(int *&, const int &, unsigned long long &), 
                             const std::string &algorithmName,
                             const int &size, 
                             const int &dataOrderType, 
@@ -148,7 +178,7 @@ void ProcessAlgorithmMode(  void (*sortFunction)(int *&, const int &, unsigned l
 
     unsigned long long comparisons = 0;
     double time = 0.0;
-    TestSortAlgorithm(sortFunction, array, size, comparisons, time, outputTime, outputComparisons);
+    TestSortAlgorithm(elapsedTimeSortFunction, countComparisonSortFunction, array, size, comparisons, time, outputTime, outputComparisons);
     writeArrayToFile(defaultOutputFilePath, array, size);
 
     if (outputTime)

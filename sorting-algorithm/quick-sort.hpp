@@ -3,6 +3,39 @@
 
 #include <iostream>
 
+int partition(int *&array, const int low, const int high)
+{
+    int pivot = array[high], i = low - 1;
+
+    for (int j = low; j <= high - 1; j++)
+    {
+        if (array[j] < pivot)
+        {
+            i++;
+            std::swap(array[i], array[j]);
+        }
+    }
+    std::swap(array[i + 1], array[high]);
+    return i + 1;
+}
+
+void QuickSort(int *&array, const int low, const int high)
+{
+    if (low < high)
+    {
+        int position = partition(array, low, high);
+
+        QuickSort(array, low, position - 1);
+        QuickSort(array, position + 1, high);
+    }
+}
+
+void QuickSort(int *&array, const int &size)
+{
+    QuickSort(array, 0, size - 1);
+}
+
+
 int partition(int *&array, const int low, const int high, unsigned long long &count_comparisons)
 {
     int pivot = array[high], i = low - 1;

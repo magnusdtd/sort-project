@@ -3,6 +3,25 @@
 
 #include <iostream>
 
+void BubbleSort(int* &array, const int &size)
+{
+    bool swapped = false;
+    for (int i = 0; i < size - 1; i++)
+    {
+        swapped = false;
+        for (int j = 0; j < size - i - 1; j++)
+        {
+            if (array[j] > array[j + 1])
+            {
+                std::swap(array[j], array[j + 1]);
+                swapped = true;
+            }
+        }
+        if (!swapped)
+            break;
+    }
+}
+
 void BubbleSort(int* &array, const int &size, unsigned long long &count_comparisons)
 {
     count_comparisons = 0;

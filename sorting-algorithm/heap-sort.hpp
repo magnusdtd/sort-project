@@ -3,6 +3,35 @@
 
 #include <iostream>
 
+void heapify(int *&array, const int &size, int i)
+{
+    int largest = i, left = 2 * i + 1, right = 2 * i + 2;
+
+    if ((left < size) && (array[left] > array[largest]))
+        largest = left;
+
+    if ((right < size) && (array[right] > array[largest]))
+        largest = right;
+
+    if (largest != i)
+    {
+        std::swap(array[i], array[largest]);
+        heapify(array, size, largest);
+    }
+}
+
+void HeapSort(int *&array, const int &size)
+{
+    for (int i = size / 2 - 1; i >= 0; i--)
+        heapify(array, size, i);
+
+    for (int i = size - 1; i > 0; i--)
+    {
+        std::swap(array[0], array[i]);
+        heapify(array, i, 0);
+    }
+}
+
 void heapify(int *&array, const int &size, int i, unsigned long long &count_comparisons)
 {
     int largest = i, left = 2 * i + 1, right = 2 * i + 2;

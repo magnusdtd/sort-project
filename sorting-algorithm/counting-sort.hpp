@@ -3,6 +3,28 @@
 
 #include <vector>
 
+void CountingSort(int *&array, const int &size)
+{
+    int maxElement = array[0];
+    for (int i = 1; i < size; i++)
+        if (array[i] > maxElement)
+            maxElement = array[i];
+
+    std::vector<int> count(maxElement + 1, 0);
+    for (int i = 0; i < size; i++)
+        count[array[i]]++;
+
+    int index = 0;
+    for (int i = 0; i <= maxElement; i++)
+    {
+        while (count[i] > 0)
+        {
+            array[index++] = i;
+            count[i]--;
+        }
+    }
+}
+
 void CountingSort(int *&array, const int &size, unsigned long long &count_comparisons)
 {
     count_comparisons = 0;

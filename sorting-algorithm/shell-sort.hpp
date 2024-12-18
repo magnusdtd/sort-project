@@ -1,6 +1,25 @@
 #ifndef SHELL_SORT_HPP
 #define SHELL_SORT_HPP
 
+void ShellSort(int *&array, const int &size)
+{
+    int gap = size / 2;
+    while (gap > 0)
+    {
+        for (int i = gap; i < size; i++)
+        {
+            int temp = array[i], j = i;
+            while (j >= gap && array[j - gap] > temp)
+            {
+                array[j] = array[j - gap];
+                j -= gap;
+            }
+            array[j] = temp;
+        }
+        gap /= 2;
+    }
+}
+
 void ShellSort(int *&array, const int &size, unsigned long long &count_comparisons)
 {
     count_comparisons = 0;

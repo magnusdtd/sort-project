@@ -1,5 +1,4 @@
-#include "./helper/test-function.hpp"
-
+#include "./helper/testFunction.hpp"
 #include "./sorting-algorithm/selection-sort.hpp"
 #include "./sorting-algorithm/insertion-sort.hpp"
 #include "./sorting-algorithm/bubble-sort.hpp"
@@ -12,7 +11,7 @@
 #include "./sorting-algorithm/radix-sort.hpp"
 #include "./sorting-algorithm/flash-sort.hpp"
 
-std::unordered_map<std::string, void (*)(int *&, const int &, unsigned long long &)> algorithms = {
+std::unordered_map<std::string, void (*)(int *&, const int &, unsigned long long &)> countComparisonFunctions = {
     {"selection-sort", SelectionSort},
     {"insertion-sort", InsertionSort},
     {"bubble-sort", BubbleSort},
@@ -23,7 +22,22 @@ std::unordered_map<std::string, void (*)(int *&, const int &, unsigned long long
     {"quick-sort", QuickSort},
     {"counting-sort", CountingSort},
     {"radix-sort", RadixSort},
-    {"flash-sort", FlashSort}};
+    {"flash-sort", FlashSort}
+};
+
+std::unordered_map<std::string, void (*)(int *&, const int &)> elaspedTimeFunctions = {
+    {"selection-sort", SelectionSort},
+    {"insertion-sort", InsertionSort},
+    {"bubble-sort", BubbleSort},
+    {"shaker-sort", ShakerSort},
+    {"shell-sort", ShellSort},
+    {"heap-sort", HeapSort},
+    {"merge-sort", MergeSort},
+    {"quick-sort", QuickSort},
+    {"counting-sort", CountingSort},
+    {"radix-sort", RadixSort},
+    {"flash-sort", FlashSort}
+};
 
 std::unordered_map<std::string, std::string> inputOrderName = {
     {"-rand", "Randomize"},
@@ -75,7 +89,7 @@ int main(int argc, char *argv[])
     if (mode == "-a")
     {
         std::string algorithm = argv[2];
-        if (algorithms.find(algorithm) == algorithms.end()) {
+        if (countComparisonFunctions.find(algorithm) == countComparisonFunctions.end()) {
             std::cerr << "Error: Unknown algorithm " << algorithm << "\n";
             return 2;
         }
@@ -100,7 +114,14 @@ int main(int argc, char *argv[])
             } else {
                 dataType = inputOrderType[inputOrder];
             }
-            ProcessAlgorithmMode(algorithms[algorithm], algorithm, size, dataType, inputOrderName[inputOrder], outputTime, outputComparisons);
+            ProcessAlgorithmMode(   elaspedTimeFunctions[algorithm], 
+                                    countComparisonFunctions[algorithm], 
+                                    algorithm, 
+                                    size, 
+                                    dataType, 
+                                    inputOrderName[inputOrder], 
+                                    outputTime, 
+                                    outputComparisons);
         }
         else if (argc == 5 && std::isdigit(argv[3][0]))
         { // Command 3: Run algorithm on different orders
@@ -115,8 +136,13 @@ int main(int argc, char *argv[])
             }
             if (size == 0)
                 std::cerr << "Error: argv[3] is 0\n";
-            if (algorithms.find(algorithm) != algorithms.end())
-                RunAlgorithmOnDifferentOrders(algorithms[algorithm], algorithm, size, outputTime, outputComparisons);
+            if (countComparisonFunctions.find(algorithm) != countComparisonFunctions.end())
+                RunAlgorithmOnDifferentOrders(  elaspedTimeFunctions[algorithm], 
+                                                countComparisonFunctions[algorithm], 
+                                                algorithm, 
+                                                size, 
+                                                outputTime, 
+                                                outputComparisons);
             else
             {
                 std::cerr << "Error: Unknown algorithm " << algorithm << "\n";
@@ -127,7 +153,12 @@ int main(int argc, char *argv[])
         { // Command 3: Run algorithm on different sizes and orders
             std::vector<int> sizes = {10000, 30000, 50000, 100000, 300000, 500000};
             for (const int &size : sizes)
-                RunAlgorithmOnDifferentOrders(algorithms[algorithm], algorithm, size, outputTime, outputComparisons);
+                RunAlgorithmOnDifferentOrders(  elaspedTimeFunctions[algorithm], 
+                                                countComparisonFunctions[algorithm], 
+                                                algorithm, 
+                                                size, 
+                                                outputTime, 
+                                                outputComparisons);
         }
         else
         { // Command 1
@@ -139,7 +170,14 @@ int main(int argc, char *argv[])
             std::cout << "--------------------------------\n";
             unsigned long long comparisons = 0;
             double time = 0;
-            TestSortAlgorithm(algorithms[algorithm], array, size, comparisons, time, outputTime, outputComparisons);
+            TestSortAlgorithm(  elaspedTimeFunctions[algorithm], 
+                                countComparisonFunctions[algorithm], 
+                                array, 
+                                size, 
+                                comparisons, 
+                                time, 
+                                outputTime, 
+                                outputComparisons);
             writeArrayToFile("./output.txt", array, size);
             if (outputTime)
                 std::cout << "Running time: " << time << " milliseconds\n";
@@ -151,10 +189,10 @@ int main(int argc, char *argv[])
     else if (mode == "-c")
     {
         algorithm1 = argv[2], algorithm2 = argv[3];
-        if (algorithms.find(algorithm1) == algorithms.end()) {
+        if (countComparisonFunctions.find(algorithm1) == countComparisonFunctions.end()) {
             std::cerr << "Error: Unknown algorithm " << algorithm1 << "\n";
             return 2;
-        } else if (algorithms.find(algorithm2) == algorithms.end()) {
+        } else if (countComparisonFunctions.find(algorithm2) == countComparisonFunctions.end()) {
             std::cerr << "Error: Unknown algorithm " << algorithm2 << "\n";
             return 2;            
         }
@@ -168,7 +206,17 @@ int main(int argc, char *argv[])
             }
             file.close();
             readArrayFromFile(argv[4], array, size);
-            CompareAlgorithms(algorithms[algorithm1], algorithms[algorithm2], algorithm1, algorithm2, array, size, argv[4], "");
+            CompareAlgorithms(  elaspedTimeFunctions[algorithm1], 
+                                countComparisonFunctions[algorithm1], 
+                                elaspedTimeFunctions[algorithm2], 
+                                countComparisonFunctions[algorithm2], 
+                                algorithm1, 
+                                algorithm2, 
+                                array, 
+                                size, 
+                                argv[4], 
+                                ""
+                                );
             delete[] array;
         }
         else if (argc == 6)
@@ -199,7 +247,17 @@ int main(int argc, char *argv[])
             }
             GenerateData(array, size, dataType);
 
-            CompareAlgorithms(algorithms[algorithm1], algorithms[algorithm2], algorithm1, algorithm2, array, size, "", inputOrderName[inputOrder]);
+            CompareAlgorithms(  elaspedTimeFunctions[algorithm1], 
+                                countComparisonFunctions[algorithm1], 
+                                elaspedTimeFunctions[algorithm2], 
+                                countComparisonFunctions[algorithm2], 
+                                algorithm1, 
+                                algorithm2, 
+                                array, 
+                                size, 
+                                "", 
+                                inputOrderName[inputOrder]
+            );
             delete[] array;
         }
         else

@@ -3,6 +3,40 @@
 
 #include <iostream>
 
+void ShakerSort(int *&array, const int &size)
+{
+    bool swapped = true;
+    int start = 0, end = size - 1;
+    while (start < end && swapped)
+    {
+        swapped = false;
+        for (int i = start; i < end; ++i)
+        {
+            if (array[i] > array[i + 1])
+            {
+                std::swap(array[i], array[i + 1]);
+                swapped = true;
+            }
+        }
+
+        if (!swapped)
+            break;
+        swapped = false;
+        --end;
+
+        for (int i = end - 1; i >= start; i--)
+        {
+            if (array[i] > array[i + 1])
+            {
+                std::swap(array[i], array[i + 1]);
+                swapped = true;
+            }
+        }
+
+        ++start;
+    }
+}
+
 void ShakerSort(int *&array, const int &size, unsigned long long &count_comparisons)
 {
     count_comparisons = 0;
