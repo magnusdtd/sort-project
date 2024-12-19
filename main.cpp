@@ -150,18 +150,23 @@ int main(int argc, char *argv[])
             }
         }
         else if (argc == 4)
-        { // Command 3: Run algorithm on different sizes and orders
-            std::vector<int> sizes = {10000, 30000, 50000, 100000, 300000, 500000};
-            for (const int &size : sizes)
-                RunAlgorithmOnDifferentOrders(  elaspedTimeFunctions[algorithm], 
-                                                countComparisonFunctions[algorithm], 
-                                                algorithm, 
-                                                size, 
-                                                outputTime, 
-                                                outputComparisons);
+        { // Command 1 with empty filePath: Run algorithm on different sizes and orders
+            runAlgorithmWithDifferentOrdersAndSizes(elaspedTimeFunctions[algorithm], 
+                                                    countComparisonFunctions[algorithm], 
+                                                    algorithm, 
+                                                    outputTime, 
+                                                    outputComparisons);
         }
         else
         { // Command 1
+            // Validate the input path
+            std::ifstream file(argv[3]);
+            if (!file) {
+                std::cerr << "Error: Invalid file path '" << argv[3] << "\'\n";
+                return 5;
+            }
+            file.close();
+
             readArrayFromFile(argv[3], array, size);
             std::cout << "ALGORITHM MODE\n";
             std::cout << "Algorithm: " << algorithm << "\n";
@@ -196,15 +201,25 @@ int main(int argc, char *argv[])
             std::cerr << "Error: Unknown algorithm " << algorithm2 << "\n";
             return 2;            
         }
-        if (argc == 5)
+        if (argc == 4) {
+            compareAlgorithmsWithDifferentOrdersAndSizes(   elaspedTimeFunctions[algorithm1], 
+                                                            countComparisonFunctions[algorithm1], 
+                                                            elaspedTimeFunctions[algorithm2], 
+                                                            countComparisonFunctions[algorithm2], 
+                                                            algorithm1, 
+                                                            algorithm2, 
+                                                            outputTime, 
+                                                            outputComparisons);
+        } else if (argc == 5)
         { // Command 4
             // Validate the input path
             std::ifstream file(argv[4]);
             if (!file) {
-                std::cerr << "Error: Invalid file path " << argv[4] << "\n";
+                std::cerr << "Error: Invalid file path \"" << argv[4] << "\"\n";
                 return 5;
             }
             file.close();
+
             readArrayFromFile(argv[4], array, size);
             CompareAlgorithms(  elaspedTimeFunctions[algorithm1], 
                                 countComparisonFunctions[algorithm1], 
@@ -218,6 +233,7 @@ int main(int argc, char *argv[])
                                 ""
                                 );
             delete[] array;
+
         }
         else if (argc == 6)
         { // Command 5

@@ -189,5 +189,48 @@ void ProcessAlgorithmMode(  void (*elapsedTimeSortFunction)(int *&, const int &)
     delete[] array;
 }
 
+void runAlgorithmWithDifferentOrdersAndSizes(void (*elapsedTimeFunc)(int *&, const int &), 
+                                             void (*countComparisonFunc)(int *&, const int &, unsigned long long &), 
+                                             const std::string &algorithm, 
+                                             bool outputTime, 
+                                             bool outputComparisons) 
+{
+    std::vector<int> orders = {RANDOM_DATA, NEARLY_SORTED_DATA, SORTED_DATA, REVERSE_DATA};
+    std::vector<int> sizes = {10000, 30000, 50000, 100000, 300000, 500000};
+    std::vector<std::string> orderName = {"Randomize", "Nearly sorted", "Sorted", "Reversed"};
+
+    for (int i = 0; i < orders.size(); i++) {
+        for (const auto &size : sizes) {
+            int *array = new int[size];
+            GenerateData(array, size, orders[i]);
+            ProcessAlgorithmMode(elapsedTimeFunc, countComparisonFunc, algorithm, size, orders[i], orderName[i],outputTime, outputComparisons);
+            std::cout << "\n";
+            delete[] array;
+        }
+    }
+}
+
+void compareAlgorithmsWithDifferentOrdersAndSizes(void (*elapsedTimeFunc1)(int *&, const int &), 
+                                                  void (*countComparisonFunc1)(int *&, const int &, unsigned long long &), 
+                                                  void (*elapsedTimeFunc2)(int *&, const int &), 
+                                                  void (*countComparisonFunc2)(int *&, const int &, unsigned long long &), 
+                                                  const std::string &algorithm1, 
+                                                  const std::string &algorithm2, 
+                                                  bool outputTime, 
+                                                  bool outputComparisons) 
+{
+    std::vector<int> orders = {RANDOM_DATA, NEARLY_SORTED_DATA, SORTED_DATA, REVERSE_DATA};
+    std::vector<int> sizes = {10000, 30000, 50000, 100000, 300000, 500000};
+    std::vector<std::string> orderName = {"Randomize", "Nearly sorted", "Sorted", "Reversed"};
+    
+    for (int i = 0; i < orders.size(); i++) {
+        for (const auto &size : sizes) {
+            int *array = new int[size];
+            GenerateData(array, size, orders[i]);
+            CompareAlgorithms(elapsedTimeFunc1, countComparisonFunc1, elapsedTimeFunc2, countComparisonFunc2, algorithm1, algorithm2, array, size, "", orderName[i]);
+            delete[] array;
+        }
+    }
+}
 
 #endif

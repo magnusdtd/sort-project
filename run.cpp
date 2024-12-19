@@ -3,13 +3,36 @@
 #include <fstream>
 #include <sstream>
 #include <unordered_map>
+#include "helper/DataGenerator.hpp"
+#include "helper/ReadWriteData.hpp"
 
-std::unordered_map<std::string, std::string> inputOrderType = {
-    {"-rand", "Randomize"}, 
-    {"-nsorted", "Nearly sorted"}, 
-    {"-sorted", "Sorted"}, 
+std::vector<std::string> dataOrders = {"-rand", "-nsorted", "-sorted", "-rev"};
+std::unordered_map<std::string, int> inputOrderType = {
+    {"-rand", RANDOM_DATA},
+    {"-nsorted", NEARLY_SORTED_DATA},
+    {"-sorted", SORTED_DATA},
+    {"-rev", REVERSE_DATA}};
+std::unordered_map<std::string, std::string> inputOrderName = {
+    {"-rand", "Randomize"},
+    {"-nsorted", "Nearly sorted"},
+    {"-sorted", "Sorted"},
     {"-rev", "Reversed"}
 };
+std::vector<int> dataSizes = {10000, 30000, 50000, 100000, 300000, 500000};
+std::vector<std::string> sortingAlgorithms = {
+    // "selection-sort", 
+    // "insertion-sort", 
+    // "bubble-sort", 
+    // "shaker-sort", 
+    // "shell-sort", 
+    // "heap-sort", 
+    // "merge-sort", 
+    // "quick-sort", 
+    // "counting-sort", 
+    // "radix-sort", 
+    "flash-sort"
+};
+
 
 std::string runCommand(const std::string &command) {
     std::string result;
@@ -44,22 +67,6 @@ int main() {
         std::cout << "Building file completed\n";
     }
 
-    std::vector<std::string> dataOrders = {"-rand", "-nsorted", "-sorted", "-rev"};
-    std::vector<int> dataSizes = {10000, 30000, 50000, 100000, 300000, 500000};
-    std::vector<std::string> sortingAlgorithms = {
-        "selection-sort", 
-        "insertion-sort", 
-        "bubble-sort", 
-        "shaker-sort", 
-        "shell-sort", 
-        "heap-sort", 
-        "merge-sort", 
-        "quick-sort", 
-        "counting-sort", 
-        "radix-sort", 
-        "flash-sort"
-    };
-
     std::ofstream outFile("result.csv");
     if (!outFile) {
         std::cerr << "Failed to open result.csv for writing\n";
@@ -73,9 +80,14 @@ int main() {
         std::cout << "Data Order: " << dataOrder << "\n";
         for (const auto &dataSize : dataSizes) {
             std::cout << "\tData Size: " << dataSize << "\n";
+
+            int *dataset = new int[dataSize];
+            GenerateData(dataset, dataSize, inputOrderType[dataOrder]);
+            writeArrayToFile("input.txt", dataset, dataSize);
+
             for (const auto &algorithm : sortingAlgorithms) {
                 std::cout << "\t\tAlgorithm: " << algorithm << "\n";
-                std::string command = ".\\main.exe -a " + algorithm + " " + std::to_string(dataSize) + " " + dataOrder + " -both";
+                std::string command = ".\\main.exe -a " + algorithm + " input.txt -both";
                 std::cout << "\t\t\tRunning command: " << command << "\n";
                 std::string output = runCommand(command);
 
@@ -97,10 +109,12 @@ int main() {
                 }
 
                 // Write to CSV file
-                outFile << inputOrderType[dataOrder] << "," << dataSize << "," << algorithm << "," << runningTime << "," << comparisons << "\n";
+                outFile << inputOrderName[dataOrder] << "," << dataSize << "," << algorithm << "," << runningTime << "," << comparisons << "\n";
 
                 std::cout << "\t\t\tFinished running command: " << command << "\n";
             }
+
+            delete[] dataset;
         }
     }
 
