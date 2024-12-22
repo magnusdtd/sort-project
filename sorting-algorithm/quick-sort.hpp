@@ -5,7 +5,10 @@
 
 int partition(int *&array, const int low, const int high)
 {
-    int pivot = array[high], i = low - 1;
+    int mid = low + (high - low) / 2;
+    int pivot = array[mid];
+    std::swap(array[mid], array[high]);
+    int i = low - 1;
 
     for (int j = low; j <= high - 1; j++)
     {
@@ -38,7 +41,10 @@ void QuickSort(int *&array, const int &size)
 
 int partition(int *&array, const int low, const int high, unsigned long long &count_comparisons)
 {
-    int pivot = array[high], i = low - 1;
+    int mid = low + (high - low) / 2;
+    int pivot = array[mid];
+    std::swap(array[mid], array[high]);
+    int i = low - 1;
 
     for (int j = low; ++count_comparisons && j <= high - 1; j++)
     {
