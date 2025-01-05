@@ -20,14 +20,14 @@ std::unordered_map<std::string, std::string> inputOrderName = {
 };
 std::vector<int> dataSizes = {10000, 30000, 50000, 100000, 300000, 500000};
 std::vector<std::string> sortingAlgorithms = {
-    // "selection-sort", 
-    // "insertion-sort", 
-    // "bubble-sort", 
-    // "shaker-sort", 
-    // "shell-sort", 
-    // "heap-sort", 
+    "selection-sort", 
+    "insertion-sort", 
+    "bubble-sort", 
+    "shaker-sort", 
+    "shell-sort", 
+    "heap-sort", 
     "merge-sort", 
-    // "quick-sort", 
+    "quick-sort", 
     "counting-sort", 
     "radix-sort", 
     "flash-sort"
