@@ -1,11 +1,10 @@
 #ifndef RADIX_SORT_HPP
 #define RADIX_SORT_HPP
 
-#include <vector>
-
 void CountingSort(int *&array, const int &size, const int exponentiation, const int base)
 {
-    std::vector<int> count(base, 0), output(size, 0);
+    int* count = new int[base]{0};
+    int* output = new int[size]{0};
 
     for (int i = 0; i < size; i++)
         count[(array[i] / exponentiation) % base]++;
@@ -20,6 +19,8 @@ void CountingSort(int *&array, const int &size, const int exponentiation, const 
 
     for (int i = 0; i < size; i++)
         array[i] = output[i];
+
+    delete[] count, output;
 }
 
 void RadixSort(int *&array, const int &size)
@@ -35,7 +36,8 @@ void RadixSort(int *&array, const int &size)
 
 void CountingSort(int *&array, const int &size, const int exponentiation, const int base, unsigned long long &count_comparisons)
 {
-    std::vector<int> count(base, 0), output(size, 0);
+    int* count = new int[base]{0};
+    int* output = new int[size]{0};
 
     for (int i = 0; ++count_comparisons && i < size; i++)
         count[(array[i] / exponentiation) % base]++;
@@ -50,6 +52,8 @@ void CountingSort(int *&array, const int &size, const int exponentiation, const 
 
     for (int i = 0; ++count_comparisons && i < size; i++)
         array[i] = output[i];
+
+    delete[] count, output;
 }
 
 void RadixSort(int *&array, const int &size, unsigned long long &count_comparisons)

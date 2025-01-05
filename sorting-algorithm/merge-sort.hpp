@@ -1,14 +1,12 @@
 #ifndef MERGE_SORT_HPP
 #define MERGE_SORT_HPP
 
-#include <vector>
-
 void merge(int *&array, const int left, const int mid, int right)
 {
     int size1 = mid - left + 1, size2 = right - mid;
 
-    std::vector<int> leftArray(size1);
-    std::vector<int> rightArray(size2);
+    int* leftArray = new int[size1];
+    int* rightArray = new int[size2];
 
     for (int i = 0; i < size1; i++)
         leftArray[i] = array[left + i];
@@ -27,6 +25,8 @@ void merge(int *&array, const int left, const int mid, int right)
 
     while (j < size2)
         array[k++] = rightArray[j++];
+
+    delete[] leftArray, rightArray;
 
 }
 
@@ -50,8 +50,8 @@ void merge(int *&array, const int left, const int mid, int right, unsigned long 
 {
     int size1 = mid - left + 1, size2 = right - mid;
 
-    std::vector<int> leftArray(size1);
-    std::vector<int> rightArray(size2);
+    int* leftArray = new int[size1];
+    int* rightArray = new int[size2];
 
     for (int i = 0; ++count_comparisons && i < size1; i++)
         leftArray[i] = array[left + i];
@@ -71,6 +71,7 @@ void merge(int *&array, const int left, const int mid, int right, unsigned long 
     while (++count_comparisons && j < size2)
         array[k++] = rightArray[j++];
 
+    delete[] leftArray, rightArray;
 }
 
 void MergeSort(int *&array, const int left, const int right, unsigned long long &count_comparisons)
