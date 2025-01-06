@@ -87,7 +87,7 @@ jobs:
         asset_name: result_tables.tex
         asset_content_type: text/plain
 
-     - name: Archive images folder
+    - name: Archive images folder
       if: success()
       run: |
         powershell Compress-Archive -Path images/* -DestinationPath images.zip
