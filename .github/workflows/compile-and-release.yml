@@ -21,12 +21,40 @@ jobs:
     - name: Run run.exe
       run: .\run.exe
 
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.x'
+
+    - name: Install Jupyter and dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install jupyter pandas matplotlib
+
+    - name: Run Jupyter Notebook
+      run: |
+        jupyter nbconvert --to notebook --execute Chart_sort.ipynb
+
     - name: Archive result.csv
       if: success()
       uses: actions/upload-artifact@v3
       with:
         name: result
         path: result.csv
+
+    - name: Archive result_tables.tex
+      if: success()
+      uses: actions/upload-artifact@v3
+      with:
+        name: result_tables
+        path: result_tables.tex
+
+    - name: Archive images folder
+      if: success()
+      uses: actions/upload-artifact@v3
+      with:
+        name: images
+        path: images/
 
     - name: Create Release
       id: create_release
@@ -48,3 +76,23 @@ jobs:
         asset_path: result.csv
         asset_name: result.csv
         asset_content_type: text/csv
+
+    - name: Upload result_tables.tex to Release
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.magnus_token }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: result_tables.tex
+        asset_name: result_tables.tex
+        asset_content_type: text/plain
+
+    - name: Upload images folder to Release
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.magnus_token }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: images/
+        asset_name: images
+        asset_content_type: application/zip
