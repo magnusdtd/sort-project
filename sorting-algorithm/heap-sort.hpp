@@ -42,7 +42,7 @@ void heapify(int *&array, const int &size, int i, unsigned long long &count_comp
     if ((++count_comparisons && right < size) && (++count_comparisons && array[right] > array[largest]))
         largest = right;
 
-    if (largest != i)
+    if (++count_comparisons && largest != i)
     {
         std::swap(array[i], array[largest]);
         heapify(array, size, largest, count_comparisons);
