@@ -1,8 +1,11 @@
 #include <iostream>
 #include <vector>
 #include <fstream>
+#include <filesystem>
 #include <sstream>
+#include <iomanip>
 #include <unordered_map>
+#include <chrono>
 #include "helper/DataGenerator.hpp"
 #include "helper/ReadWriteData.hpp"
 
@@ -32,7 +35,6 @@ std::vector<std::string> sortingAlgorithms = {
     "radix-sort", 
     "flash-sort"
 };
-
 
 std::string runCommand(const std::string &command) {
     std::string result;
@@ -76,6 +78,8 @@ int main() {
     // Write CSV header
     outFile << "Data Order,Data Size,Algorithm,Running Time (ms),Comparisons\n";
 
+    std::filesystem::create_directories("./datasets");
+
     for (const auto &dataOrder : dataOrders) {
         std::cout << "Data Order: " << dataOrder << "\n";
         for (const auto &dataSize : dataSizes) {
@@ -84,6 +88,17 @@ int main() {
             int *dataset = new int[dataSize];
             GenerateData(dataset, dataSize, inputOrderType[dataOrder]);
             writeArrayToFile("input.txt", dataset, dataSize);
+
+            // Get the current time
+            auto now = std::chrono::system_clock::now();
+            auto now_time_t = std::chrono::system_clock::to_time_t(now);
+            auto now_ms = std::chrono::duration_cast<std::chrono::milliseconds>(now.time_since_epoch()) % 1000;
+
+            std::ostringstream filename;
+            filename << "./datasets/dataset_" << dataOrder << "_" << dataSize << "_"
+                     << std::put_time(std::localtime(&now_time_t), "%Y%m%d_%H%M%S") << "_"
+                     << std::setw(3) << std::setfill('0') << now_ms.count() << ".txt";
+            writeArrayToFile(filename.str(), dataset, dataSize);
 
             for (const auto &algorithm : sortingAlgorithms) {
                 std::cout << "\t\tAlgorithm: " << algorithm << "\n";

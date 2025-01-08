@@ -101,3 +101,18 @@ jobs:
         asset_path: images.zip
         asset_name: images.zip
         asset_content_type: application/zip
+
+    - name: Archive datasets folder
+      if: success()
+      run: |
+        powershell Compress-Archive -Path datasets/* -DestinationPath datasets.zip
+
+    - name: Upload datasets.zip to Release
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.magnus_token }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: datasets.zip
+        asset_name: datasets.zip
+        asset_content_type: application/zip
