@@ -4,94 +4,89 @@
 #include <iostream>
 #include <fstream>
 #include <cmath>
-#include <random>
+#include <time.h>
+using namespace std;
 
 #define RANDOM_DATA 0
 #define SORTED_DATA 1
 #define REVERSE_DATA 2
 #define NEARLY_SORTED_DATA 3
 
+
 template <class T>
 void HoanVi(T &a, T &b)
 {
-    T x = a;
-    a = b;
-    b = x;
+	T x = a;
+	a = b;
+	b = x;
 }
 
 //-------------------------------------------------
 
-// Function to generate an array with random data
+// Hàm phát sinh mảng dữ liệu ngẫu nhiên
 void GenerateRandomData(int *a, int n)
 {
-    std::random_device rd;
-    std::mt19937 gen(rd());
-    std::uniform_int_distribution<> dis(0, n - 1);
+	srand((unsigned int)time(NULL));
 
-    for (int i = 0; i < n; i++)
-    {
-        a[i] = dis(gen);
-    }
+	for (int i = 0; i < n; i++)
+	{
+		a[i] = rand()%n;
+	}
 }
 
-// Function to generate an array with sorted data
+// Hàm phát sinh mảng dữ liệu có thứ tự tăng dần
 void GenerateSortedData(int *a, int n)
 {
-    for (int i = 0; i < n; i++)
-    {
-        a[i] = i;
-    }
+	for (int i = 0; i < n; i++)
+	{
+		a[i] = i;
+	}
 }
 
-// Function to generate an array with reverse sorted data
+// Hàm phát sinh mảng dữ liệu có thứ tự ngược (giảm dần)
 void GenerateReverseData(int *a, int n)
 {
-    for (int i = 0; i < n; i++)
-    {
-        a[i] = n - 1 - i;
-    }
+	for (int i = 0; i < n; i++)
+	{
+		a[i] = n - 1 - i;
+	}
 }
 
-// Function to generate an array with nearly sorted data
+// Hàm phát sinh mảng dữ liệu gần như có thứ tự
 void GenerateNearlySortedData(int *a, int n)
 {
-    for (int i = 0; i < n; i++)
-    {
-        a[i] = i;
-    }
-
-    std::random_device rd;
-    std::mt19937 gen(rd());
-    std::uniform_int_distribution<> dis(0, n - 1);
-
-    for (int i = 0; i < 10; i++)
-    {
-        int r1 = dis(gen);
-        int r2 = dis(gen);
-        HoanVi(a[r1], a[r2]);
-    }
+	for (int i = 0; i < n; i++)
+	{
+		a[i] = i;
+	}
+	srand((unsigned int) time(NULL));
+	for (int i = 0; i < 10; i ++)
+	{
+		int r1 = rand()%n;
+		int r2 = rand()%n;
+		HoanVi(a[r1], a[r2]);
+	}
 }
 
-// Function to generate data based on the specified type
 void GenerateData(int *a, int n, int dataType)
 {
-    switch (dataType)
-    {
-    case RANDOM_DATA:    // Random data
-        GenerateRandomData(a, n);
-        break;
-    case SORTED_DATA:    // Sorted data
-        GenerateSortedData(a, n);
-        break;
-    case REVERSE_DATA:   // Reverse sorted data
-        GenerateReverseData(a, n);
-        break;
-    case NEARLY_SORTED_DATA:  // Nearly sorted data
-        GenerateNearlySortedData(a, n);
-        break;
-    default:
-        std::cout << "Error: unknown data type!\n";
-    }
+	switch (dataType)
+	{
+	case RANDOM_DATA:	// ngẫu nhiên
+		GenerateRandomData(a, n);
+		break;
+	case SORTED_DATA:	// có thứ tự
+		GenerateSortedData(a, n);
+		break;
+	case REVERSE_DATA:	// có thứ tự ngược
+		GenerateReverseData(a, n);
+		break;
+	case NEARLY_SORTED_DATA:	// gần như có thứ tự
+		GenerateNearlySortedData(a, n);
+		break;
+	default:
+		printf("Error: unknown data type!\n");
+	}
 }
 
-#endif // DATA_GENERATOR_HPP
+#endif
